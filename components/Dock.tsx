@@ -18,6 +18,7 @@
 "use client"
 
 import { dockApps } from "@/constants";
+import useWindowStore, { WindowKey } from "@/store/window";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef } from "react";
@@ -28,6 +29,9 @@ import { Tooltip } from "react-tooltip";
 
 
 const Dock = () => {
+    // STEP 15: Access Window Management Store
+  // Get openWindow, closeWindow functions and current windows state to control app lifecycle
+  const { openWindow, closeWindow, windows } = useWindowStore();
    // STEP 11: Create Reference for Dock Container
   // Used to target the dock element for GSAP animations and event listeners
   const dockRef = useRef<HTMLDivElement | null>(null);
@@ -94,10 +98,26 @@ const Dock = () => {
     };
   }, []);
 
+  const toggleApp = (app: { id: string; canOpen: boolean}) => {
+    // STEP 15 (continued): Toggle Window Open/Close State
+    // Check if window exists, then open or close accordingly
+    if (!app.canOpen) return () => {};
+    
+    const window = windows[app.id];
 
-  const toggleApp = () => {
-    //TODO:Toggle window logic
-  }
+    if (!window) {
+      console.error(`Window not found for app: ${app.id}`);
+      return;
+    }
+
+    if (window.isOpen) {
+      closeWindow(app.id as WindowKey);
+    } else {
+      openWindow(app.id as WindowKey);
+    }
+
+    console.log(windows);
+  };
   return (
     <section id="dock">
       <div ref={dockRef} className="dock-container">
@@ -111,7 +131,7 @@ const Dock = () => {
               data-tooltip-content={name}
               data-tooltip-delay-show={150}
               disabled={!canOpen}
-              onClick={() => toggleApp()}
+              onClick={() => toggleApp({ id, canOpen })}
             >
               <img
                 src={`/images/${icon}`}
