@@ -98,7 +98,15 @@ const Dock = () => {
     };
   }, []);
 
-  const toggleApp = (app: { id: string; canOpen: boolean}) => {
+
+  type DockApp = {
+    id: WindowKey;
+    name: string;
+    icon: string;
+    canOpen: boolean;
+  };
+
+  const toggleApp = (app: DockApp) => {
     // STEP 15 (continued): Toggle Window Open/Close State
     // Check if window exists, then open or close accordingly
     if (!app.canOpen) return () => {};
@@ -131,7 +139,7 @@ const Dock = () => {
               data-tooltip-content={name}
               data-tooltip-delay-show={150}
               disabled={!canOpen}
-              onClick={() => toggleApp({ id, canOpen })}
+                onClick={() => toggleApp({ id: id as WindowKey, name, icon, canOpen })}
             >
               <img
                 src={`/images/${icon}`}

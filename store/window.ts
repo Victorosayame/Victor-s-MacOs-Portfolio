@@ -28,7 +28,7 @@ import { INITIAL_Z_INDEX, WINDOW_CONFIG } from "@/constants";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-
+// Export a typed key for windows so consumers can avoid `any`.
 export type WindowKey = keyof typeof WINDOW_CONFIG;
 
 interface WindowState {
@@ -48,13 +48,12 @@ interface WindowStore {
   focusWindow: (windowKey: WindowKey) => void;
 }
 
-
 const useWindowStore = create<WindowStore>()(
   immer((set) => ({
     windows: WINDOW_CONFIG,
     nextZIndex: INITIAL_Z_INDEX + 1,
 
-    openWindow: (windowKey, data = null) =>
+    openWindow: (windowKey: WindowKey, data: unknown | null = null) =>
       set((state) => {
         const existingWindow = state.windows[windowKey];
         if (!existingWindow) return;
@@ -63,7 +62,7 @@ const useWindowStore = create<WindowStore>()(
         existingWindow.data = data ?? existingWindow.data;
         state.nextZIndex++;
       }),
-    closeWindow: (windowKey) =>
+    closeWindow: (windowKey: WindowKey) =>
       set((state) => {
         const existingWindow = state.windows[windowKey];
         //if the windowKey is invalid, do nothing
@@ -72,7 +71,7 @@ const useWindowStore = create<WindowStore>()(
         existingWindow.zIndex = INITIAL_Z_INDEX;
         existingWindow.data = null;
       }),
-    focusWindow: (windowKey) =>
+    focusWindow: (windowKey: WindowKey) =>
       set((state) => {
         const existingWindow = state.windows[windowKey];
         existingWindow.zIndex = state.nextZIndex++;
