@@ -1,5 +1,5 @@
 import { Dock, Navbar, Welcome } from "@/components";
-
+import { Terminal } from "@/windows";
 
 
 export default function Home() {
@@ -8,6 +8,8 @@ export default function Home() {
       <Navbar />
       <Welcome />
       <Dock />
+
+      <Terminal />
     </main>
   );
 }
