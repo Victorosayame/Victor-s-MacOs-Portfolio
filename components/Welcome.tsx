@@ -84,18 +84,6 @@ const FONT_WEIGHTS = {
  * creating a dynamic "gravity" effect that follows the cursor.
  */
 
-/** Allowed font weight config shape */
-interface FontWeightConfig {
-  min: number;
-  max: number;
-  default: number;
-}
-
-/** FONT_WEIGHTS object shape */
-// interface FontWeightsMap {
-//   [key: string]: FontWeightConfig;
-// }
-
 /** Props / arguments for setupTextHover */
 interface SetupTextHoverProps {
   container: HTMLElement | null;
