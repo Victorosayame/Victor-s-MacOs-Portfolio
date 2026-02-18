@@ -15,7 +15,7 @@
  * - Sets up GSAP Draggable for drag-to-move functionality
  * - Integrates with Zustand store for global state
  */
-"use client"
+"use client";
 
 import gsap, { registerGSAPPlugins } from "@/lib/gsap";
 import useWindowStore, { WindowKey } from "@/store/window";
@@ -34,7 +34,10 @@ interface IDraggableInstance {
   // optionally, add more methods if you need: disable, enable, revert, etc.
 }
 
-const WindowWrapper = <P extends WindowProps>(Component: ComponentType<P>, windowKey: WindowKey) => {
+const WindowWrapper = <P extends WindowProps>(
+  Component: ComponentType<P>,
+  windowKey: WindowKey,
+) => {
   const Wrapped = (props: P) => {
     const { focusWindow, windows } = useWindowStore();
     const { isOpen, zIndex } = windows[windowKey];
@@ -93,19 +96,22 @@ const WindowWrapper = <P extends WindowProps>(Component: ComponentType<P>, windo
       const currentElement = ref.current;
       if (!currentElement) return;
 
+      let cancelled = false;
       // Register plugin and create Draggable dynamically
       let draggableInstance: IDraggableInstance | null = null;
-      registerGSAPPlugins().then((Draggable) => {
-         if (!Draggable) return;
+      (async () => {
+        const Draggable = await registerGSAPPlugins();
+        if (!Draggable || cancelled || !ref.current) return;
 
-      const [instance] = Draggable.create(currentElement, {
-        onPress: () => focusWindow(windowKey),
-      }) as IDraggableInstance[];
+        const [instance] = Draggable.create(ref.current, {
+          onPress: () => focusWindow(windowKey),
+        }) as IDraggableInstance[];
 
-      draggableInstance = instance;
-    })
+        draggableInstance = instance;
+      })();
 
-     return () => {
+      return () => {
+        cancelled = true;
         draggableInstance?.kill();
       };
     }, [windowKey, focusWindow]);
@@ -120,7 +126,12 @@ const WindowWrapper = <P extends WindowProps>(Component: ComponentType<P>, windo
     }, [isOpen]);
 
     return (
-      <section id={windowKey} ref={ref} style={{ zIndex, display: isOpen ? "block" : "none", opacity: 0 }} className="absolute">
+      <section
+        id={windowKey}
+        ref={ref}
+        style={{ zIndex, display: isOpen ? "block" : "none", opacity: 0 }}
+        className="absolute"
+      >
         <Component {...props} />
       </section>
     );
