@@ -2,6 +2,7 @@
 "use client"
 
 import { navIcons, navLinks } from "@/constants";
+import useWindowStore, { WindowKey } from "@/store/window";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -10,6 +11,10 @@ import { useEffect, useState } from "react";
 
 
 const NavItems = () => {
+   // STEP 24: Add Quick Navigation to Windows via Navbar Links
+  // Integrating useWindowStore to provide one-click access to main sections
+  // Users can click navigation items to directly open windows instead of using dock
+  const { openWindow } = useWindowStore();
 
   const [time, setTime] = useState(dayjs());
 
@@ -32,8 +37,8 @@ const NavItems = () => {
         <p className="font-bold">Victor's Portfolio</p>
         
         <ul>
-           {navLinks.map(({ id, name }) => (
-            <li key={id} onClick={() => {}}>
+           {navLinks.map(({ id, name, type }) => (
+            <li key={id} onClick={() => openWindow(type as WindowKey)}>
               <p>{name}</p>
             </li>
           ))}

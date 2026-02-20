@@ -1,3 +1,5 @@
+import { FolderItem } from "@/types/location";
+
 const navLinks = [
   {
     id: 1,
@@ -215,7 +217,7 @@ export {
   gallery,
 };
 
-const WORK_LOCATION = {
+const WORK_LOCATION: FolderItem = {
   id: 1,
   type: "work",
   name: "Work",
@@ -383,7 +385,7 @@ const WORK_LOCATION = {
   ],
 };
 
-const ABOUT_LOCATION = {
+const ABOUT_LOCATION: FolderItem = {
   id: 2,
   type: "about",
   name: "About me",
@@ -436,7 +438,7 @@ const ABOUT_LOCATION = {
   ],
 };
 
-const RESUME_LOCATION = {
+const RESUME_LOCATION: FolderItem = {
   id: 3,
   type: "resume",
   name: "Resume",
@@ -455,7 +457,7 @@ const RESUME_LOCATION = {
   ],
 };
 
-const TRASH_LOCATION = {
+const TRASH_LOCATION: FolderItem = {
   id: 4,
   type: "trash",
   name: "Trash",
