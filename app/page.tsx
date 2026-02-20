@@ -1,5 +1,5 @@
-import { Dock, Navbar, Welcome } from "@/components";
-import { Safari, Terminal, Resume, Finder, Text, Image, Contact } from "@/windows";
+import { Dock, HomePage, Navbar, Welcome } from "@/components";
+import { Safari, Terminal, Resume, Finder, Text, Image, Contact, Photo } from "@/windows";
 
 
 export default function Home() {
@@ -16,6 +16,10 @@ export default function Home() {
       <Text />
       <Image />
       <Contact />
+      <Photo />
+
+      
+      <HomePage />
     </main>
   );
 }
