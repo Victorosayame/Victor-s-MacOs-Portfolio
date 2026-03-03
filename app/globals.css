@@ -120,12 +120,20 @@ body {
     }
 
     .minimize {
-      @apply size-3.5 rounded-full bg-[#ffc030];
+      @apply size-3.5 rounded-full bg-[#ffc030] cursor-pointer;
     }
 
     .maximize {
-      @apply size-3.5 rounded-full bg-[#2acb42];
+      @apply size-3.5 rounded-full bg-[#2acb42] cursor-pointer;
     }
+  }
+
+  /* when a window has been maximized the wrapper gets this class; ensure it fills the screen */
+  section.maximized {
+    @apply top-0 left-0 w-screen h-screen;
+    transform: none;
+    max-width: none;
+    inset: 0;
   }
 
   #window-header {

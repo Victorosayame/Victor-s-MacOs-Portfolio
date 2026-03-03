@@ -14,6 +14,11 @@
  * - Applies GSAP animations for smooth entrance/exit effects
  * - Sets up GSAP Draggable for drag-to-move functionality
  * - Integrates with Zustand store for global state
+ * - Respect minimize/maximize state: minimized windows are hidden; maximized windows fill the viewport
+ *
+ * Update: When a window is maximized the wrapper clears transforms and max-width
+ * and sets inset to cover the viewport so per-window CSS positioning doesn't
+ * constrain the maximized display.
  */
 "use client";
 
@@ -40,7 +45,7 @@ const WindowWrapper = <P extends WindowProps>(
 ) => {
   const Wrapped = (props: P) => {
     const { focusWindow, windows } = useWindowStore();
-    const { isOpen, zIndex } = windows[windowKey];
+    const { isOpen, zIndex, isMinimized, isMaximized } = windows[windowKey];
     const ref = useRef<HTMLDivElement>(null);
 
     /**
@@ -122,15 +127,33 @@ const WindowWrapper = <P extends WindowProps>(
       const currentElement = ref.current;
       if (!currentElement) return () => {};
 
-      currentElement.style.display = isOpen ? "block" : "none";
-    }, [isOpen]);
+      // if the window is minimized treat it as closed from a visibility perspective
+      const visible = isOpen && !isMinimized;
+      currentElement.style.display = visible ? "block" : "none";
+    }, [isOpen, isMinimized]);
 
     return (
       <section
         id={windowKey}
         ref={ref}
-        style={{ zIndex, display: isOpen ? "block" : "none", opacity: 0 }}
-        className="absolute"
+        style={{
+          zIndex,
+          // visibility already handled in useLayoutEffect; set opacity to 0 to enable animation
+          opacity: 0,
+          ...(isMaximized
+            ? {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: "100vw",
+                height: "100vh",
+                transform: "none",
+                maxWidth: "none",
+              }
+            : {}),
+        }}
+        className={`absolute ${isMaximized ? "maximized" : ""}`}
       >
         <Component {...props} />
       </section>

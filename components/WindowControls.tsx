@@ -6,22 +6,44 @@
  * - Yellow minimize button (•) - Disabled (placeholder for future functionality)
  * - Green maximize button (•) - Disabled (placeholder for future functionality)
  *
+ * Update: Minimize and maximize buttons are now implemented.
+ * - Yellow (minimize): toggles minimize/restore via `minimizeWindow` / `restoreWindow` in the window store
+ * - Green (maximize): toggles full-screen via `toggleMaximizeWindow` in the window store
+ *
  * Props:
  * - target: Window key identifier (e.g., "finder", "resume") passed to closeWindow
  *
  * Integration:
- * - Uses Zustand store to access closeWindow action
- * - Only close button is functional in current implementation
+ * - Uses Zustand store to access `closeWindow`, `minimizeWindow`, `restoreWindow`, and `toggleMaximizeWindow`
+ * - Close/minimize/maximize now update global window state so all windows behave consistently
  * - Styled to match macOS appearance with proper colors and positioning
  */
-"use client"
+"use client";
 
 import useWindowStore, { WindowKey } from "@/store/window";
 
-
 const WindowControls = ({ target }: { target: WindowKey }) => {
-  const { closeWindow } = useWindowStore();
-  //TODO:Work on the minimize and maximize button
+  const {
+    closeWindow,
+    minimizeWindow,
+    toggleMaximizeWindow,
+    windows,
+    restoreWindow,
+  } = useWindowStore();
+
+  const win = windows[target];
+  const isMax = win?.isMaximized;
+  const isMin = win?.isMinimized;
+
+  // clicking the minimize button when already minimized should just restore
+  const handleMinimize = () => {
+    if (isMin) {
+      restoreWindow(target);
+    } else {
+      minimizeWindow(target);
+    }
+  };
+
   return (
     <div id="window-controls">
       <button
@@ -34,13 +56,13 @@ const WindowControls = ({ target }: { target: WindowKey }) => {
         type="button"
         className="minimize"
         aria-label="Minimize window"
-        disabled
+        onClick={handleMinimize}
       />
       <button
         type="button"
         className="maximize"
-        aria-label="Maximize window"
-        disabled
+        aria-label={isMax ? "Restore window" : "Maximize window"}
+        onClick={() => toggleMaximizeWindow(target)}
       />
     </div>
   );

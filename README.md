@@ -4,33 +4,118 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
-```bash
+````bash
 npm run dev
 # or
-yarn dev
+# Victor's MacOS Portfolio
+
+This repository implements a MacOS-style portfolio UI built with Next.js, TypeScript, Tailwind CSS, GSAP, and Zustand.
+
+## Quick Start
+
+Prerequisites:
+- Node.js 18+ (recommended)
+- npm or pnpm
+
+Install dependencies:
+
+```bash
+npm install
 # or
-pnpm dev
-# or
-bun dev
+pnpm install
+````
+
+Run dev server:
+
+```bash
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Build for production:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure (high level)
 
-## Learn More
+- `app/` - Next.js app routes and global styles
+- `components/` - Shared UI components (Navbar, Dock, WindowControls, etc.)
+- `hoc/WindowWrapper.tsx` - HOC that wraps windows with drag, focus, animation, visibility, and maximize/minimize handling
+- `store/window.ts` - Zustand store managing global window state (open, close, z-index, minimize, maximize)
+- `windows/` - Individual window UI pieces (Finder, Contact, Photo, Terminal, Text, Image, Resume, Safari)
+- `constants/` - App constants (initial window config, locations, data)
 
-To learn more about Next.js, take a look at the following resources:
+## Step-by-step implementation notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+These steps correspond to the `STEP ##` comments across the codebase. The most relevant steps are listed here and include additions for the minimize/maximize features.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- STEP 14: Create Global Window State Store with Zustand
+  - Implements `useWindowStore` with `windows` map and `nextZIndex`.
+  - Actions: `openWindow`, `closeWindow`, `focusWindow`.
+  - Added actions: `minimizeWindow`, `restoreWindow`, `toggleMaximizeWindow`.
+  - New window state fields: `isMinimized`, `isMaximized`.
 
-## Deploy on Vercel
+- STEP 16: `WindowWrapper` HOC
+  - Wraps each window component and applies GSAP open animations.
+  - Adds Draggable behavior so windows can be dragged.
+  - Respects `isOpen` and `isMinimized` for visibility.
+  - When maximized, clears transforms and sizing constraints and fills the viewport.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- STEP 19: Window open animation using GSAP
+  - Smooth pop-in animation when a window opens.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- STEP 20: Draggable window functionality
+  - Uses GSAP Draggable to allow dragging and focuses the window on press.
+
+- STEP 21: `WindowControls` component (Close/Minimize/Maximize)
+  - Close button calls `closeWindow`.
+  - Minimize calls `minimizeWindow` (or `restoreWindow` if already minimized).
+  - Maximize toggles `toggleMaximizeWindow` and restores from minimize when maximizing.
+
+- Additional steps:
+  - Updated per-window CSS to include a `.maximized` fallback style that removes transforms and max-width constraints.
+  - Ensured inline maximize styles include `transform: none` and `maxWidth: none` to override per-window CSS like `max-w-*` and translate offsets.
+
+## How minimize & maximize work (implementation details)
+
+- Minimize:
+  - `minimizeWindow(windowKey)` sets `isMinimized = true` and `isOpen = false`.
+  - The `WindowWrapper` treats minimized windows as not visible (`display: none`).
+  - State is preserved; calling `restoreWindow(windowKey)` sets `isMinimized = false`, `isOpen = true`, and increments `zIndex` to bring it forward.
+
+- Maximize:
+  - `toggleMaximizeWindow(windowKey)` toggles `isMaximized` and sets `isOpen = true` and `isMinimized = false`.
+  - When `isMaximized` is true the wrapper applies inline styles (`top:0,left:0,right:0,bottom:0,width:100vw,height:100vh,transform:none,maxWidth:none`) and adds `maximized` CSS class.
+  - This overrides per-window `left/top/max-width/transform` CSS so the window fills the screen.
+
+## Testing the features
+
+1. Start the dev server: `npm run dev`.
+2. Open a window (e.g., Contact or Photos) via the Dock or Navbar.
+3. Click the yellow dot to minimize; the window should hide but its state is preserved.
+4. Click the yellow dot again on the same app to restore it.
+5. Click the green dot to maximize; the window should fill the viewport.
+6. Click the green dot again to restore to the previous size/position.
+
+## Future improvements
+
+- Add a Dock UI that visually shows minimized windows and allows restoring via clicks.
+- Animate maximize/restore transitions for smoother UX.
+- Persist window positions/sizes to localStorage to survive reloads.
+- Add keyboard shortcuts for window management (e.g., Cmd+M to minimize).
+
+## Notes for contributors
+
+- File layout and STEP comments are used to track implementation progress and map code to the tutorial steps.
+- When adding features, update the STEP comments near relevant files so the README remains accurate.
+
+---
+
+If you want, I can also:
+
+- Update the per-window CSS to remove `max-w-*` and absolute offsets so maximized behavior is handled purely by the wrapper, or
+- Add a short animated transition for maximize/restore in `WindowWrapper` using GSAP.
+
+Tell me which follow-up you'd like and I'll implement it.
