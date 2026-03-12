@@ -27,15 +27,16 @@ const Contact = () => {
       </div>
 
       <div className="p-5 space-y-5">
-        <img
+        {/**TODO place image when you have one */}
+        {/* <img
           src="/images/adrian.jpg"
           alt="Name"
           className="w-20 rounded-full"
-        />
+        /> */}
 
         <h3>Let's Connect</h3>
         <p>Got an idea? A bug to squash? Or just wanna talk tech? I'm in.</p>
-        <p>contact@bishopcodes.pro</p>
+        <p>osayamevictor@gmail.com</p>
 
         <ul>
           {socials.map(({ id, bg, link, icon, text }) => (
@@ -51,7 +52,7 @@ const Contact = () => {
                 rel="noopener noreferrer"
                 title={text}
               >
-                <img src={icon} alt={text} className="size-5" />
+                {icon}
                 <p>{text}</p>
               </a>
             </li>

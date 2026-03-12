@@ -172,7 +172,7 @@ const Welcome = () => {
       </h1>
 
       <div className="small-screen">
-        <p>This Portfolio is designed for desktop/tablet screens only.</p>
+        <p>This Portfolio is designed for desktop/tablet screens only. But you can rotate you mobile phone to view this portfolio in performance mode.</p>
       </div>
     </section>
   )

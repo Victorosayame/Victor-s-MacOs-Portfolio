@@ -10,13 +10,14 @@ export default function Home() {
       <Dock />
 
       <Terminal />
-      <Safari />
+      {/* <Safari /> */}
       <Resume />
       <Finder />
       <Text />
       <Image />
       <Contact />
-      <Photo />
+      {/* <Photo /> TODO*/}
+      {/* <Photo /> */}
 
       
       <HomePage />
